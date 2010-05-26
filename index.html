@@ -1,12 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title>AjaxUpload</title>
 </head>
-
 <body>
 	<form method="post" action="" enctype="multipart/form-data">
 		<input type="file" name="file1" id="example1" /><br />
@@ -20,7 +18,7 @@
 		function applyAjaxFileUpload(element) {
 			$(element).ajaxfileupload({
 				debug : true,
-				onSubmit: function(file) {
+				onChange: function(file) {
 					var span = $('<span />')
 						.attr('class', $(this).attr('id'))
 						.text('Uploading')
@@ -35,9 +33,16 @@
 						}
 					}, 200);
 				},
+				onSubmit: function(file) {
+					
+					if (file == 'index.html'){
+						return false;
+					}
+					
+				},
 				onComplete: function(file, response) {
 					window.clearInterval(interval);
-					var span = $('span.' + $(this).attr('id')).text(file);
+					var span = $('span.' + $(this).attr('id')).text(file + ' ');
 					var input = $('<input />')
 						.attr({
 							type: 'hidden',

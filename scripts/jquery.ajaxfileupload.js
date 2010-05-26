@@ -3,56 +3,61 @@
  * http://github.com/davgothic/AjaxFileUpload
  * 
  * Copyright (c) 2010 David Hancock
- * Licensed under the MIT license ( See bundled LICENSE file )
+ * Licensed under the MIT license ( http://davgothic.com/mit-license/ )
  */
 
 (function($) {
 	$.fn.ajaxfileupload = function(options) {
-
+		
 		var defaults = {
 			debug: false,
 			action: 'upload.php',
+			onChange: function(file){},
 			onSubmit: function(file){},
 			onComplete: function(file, response){}
 		},
 		settings = $.extend({}, defaults, options);
-
+		
 		this.each(function() {
 			var $this = $(this);
-
 			if ($this.is('input') && $this.attr('type') == 'file') {
-				
 				log('Applying to file input with id ' + $this[0].id);
-				
 				$this.bind('change', onChange);
-				
 			} else {
-				log('Ignoring invalid element')
+				log('Ignoring invalid element');
 			}
 		});
 		
 		function onChange(e) {
-			
 			var element	= $(e.target);
 			var file	= filename(element.val());
-			
-			settings.onSubmit.call(this, file);
+			settings.onChange.call(this, file);
 			
 			var iframe = createIframe();
 			iframe.bind('load', {element:element, file:file}, onComplete);
 			
 			var form = createForm(iframe);
-			form.append(element).submit();
+			form.append(element).bind('submit', {element:element, file:file}, onSubmit).submit();
+		}
+		
+		function onSubmit(e) {
+			// If false cancel the submission
+			if (settings.onSubmit.call(e.data.element, e.data.file) === false) {
+				$('span.' + e.data.element.attr('id')).replaceWith(e.data.element);
+				return false;
+			}
 			
-			// clean up
-            form.remove();
-			form = null;
-            element.remove();
-			element = null;
+			// Clean up
+			setTimeout(function() {
+				$(this).remove();
+				e.data.element.remove();
+				e.data.element = null;
+			}, 0);
+			
+			return;
 		}
 		
 		function onComplete (e) {
-			
 			var iframe = $(e.target);
 			
 			// Get the response text from the iframe
@@ -88,9 +93,7 @@
 		})();
 		
 		function createIframe() {
-			
 			var id = randomId();
-			
 			var iframe = $('<iframe/>')
 				.attr({
 					src: 'javascript:false;',
@@ -99,12 +102,11 @@
 				})
 				.hide()
 				.appendTo('body');
-			
+				
 			return iframe;
 		}
 		
 		function createForm(iframe) {
-			
 			var form = $('<form />')
 				.attr({
 					method: 'post',
@@ -114,7 +116,7 @@
 				})
 				.hide()
 				.appendTo('body');
-			
+				
 			return form;
 		}
 		
