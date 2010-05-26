@@ -1,9 +1,19 @@
+/**
+ * AJAX File Upload
+ * http://github.com/davgothic/AjaxFileUpload
+ * 
+ * Copyright (c) 2010 David Hancock
+ * Licensed under the MIT license ( See bundled LICENSE file )
+ */
+
 (function($) {
 	$.fn.ajaxfileupload = function(options) {
 
 		var defaults = {
 			debug: false,
 			action: 'upload.php',
+			onSubmit: function(file){},
+			onComplete: function(file, response){}
 		},
 		settings = $.extend({}, defaults, options);
 
@@ -22,50 +32,58 @@
 		});
 		
 		function onChange(e) {
-			log('onChange fired');
-			log('Selected file: ' + $(e.target).val());
 			
-			var span = $('<span />')
-				.text('Uploading')
-				.insertAfter(e.target);
-				
-			settings.interval = window.setInterval(function() {
-				var text = span.text();
-				if (text.length < 13) {
-					span.text(text + '.');
-				} else {
-					span.text('Uploading');
-				}
-			}, 200);
+			var element	= $(e.target);
+			var file	= filename(element.val());
+			
+			settings.onSubmit.call(this, file);
 			
 			var iframe = createIframe();
-			iframe.bind('load', {span:span}, onComplete)
+			iframe.bind('load', {element:element, file:file}, onComplete);
+			
 			var form = createForm(iframe);
-
-			form.append(e.target);
-			form.submit();
+			form.append(element).submit();
 			
 			// clean up
             form.remove();
 			form = null;
-            $(e.target).remove();
-			e.target = null;
+            element.remove();
+			element = null;
 		}
 		
 		function onComplete (e) {
-			log('onComplete fired');
-			var response = e.target.contentDocument.body.innerHTML;
-			response = eval("(" + response + ")");
-			$(e.data.span).replaceWith('Done');
-			console.log(response);
 			
-			$(e.target).remove();
+			var iframe = $(e.target);
+			
+			// Get the response text from the iframe
+			var doc = iframe[0].contentDocument ? iframe[0].contentDocument : window.frames[iframe[0].id].document;
+			var response = doc.body.innerHTML;
+			
+			if (response) {
+				response = eval("(" + response + ")");
+			} else {
+				response = {};
+			}
+			
+			// Fire our callback
+			settings.onComplete.call(e.data.element, e.data.file, response);
+			
+			// Remove the iframe after short delay
+			setTimeout(function() {
+				iframe.remove();
+			}, 0);
+			
+			return;
+		}
+		
+		function filename(filePath) {
+			return filePath.replace(/.*(\/|\\)/, '');
 		}
 		
 		var randomId = (function() {
 			var id = 0;
 			return function () {
-				return '_AjaxUpload' + id++;
+				return '_AjaxFileUpload' + id++;
 			};
 		})();
 		
@@ -74,8 +92,11 @@
 			var id = randomId();
 			
 			var iframe = $('<iframe/>')
-				.attr('name', id)
-				.attr('id', id)
+				.attr({
+					src: 'javascript:false;',
+					name: id,
+					id: id
+				})
 				.hide()
 				.appendTo('body');
 			
@@ -85,10 +106,12 @@
 		function createForm(iframe) {
 			
 			var form = $('<form />')
-				.attr('method', 'post')
-				.attr('action', settings.action)
-				.attr('enctype', 'multipart/form-data')
-				.attr('target', iframe[0].name)
+				.attr({
+					method: 'post',
+					action: settings.action,
+					enctype: 'multipart/form-data',
+					target: iframe[0].name
+				})
 				.hide()
 				.appendTo('body');
 			

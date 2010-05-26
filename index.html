@@ -9,20 +9,72 @@
 
 <body>
 	<form method="post" action="" enctype="multipart/form-data">
-		<input type="file" name="filename" id="example1" /><br />
+		<input type="file" name="file1" id="example1" /><br />
 		<input type="text" name="filename" id="example2" /><br />
-		<input type="file" name="filename" id="example3" /><br />
+		<input type="file" name="file2" id="example3" /><br />
 	</form>
+	<script type="text/javascript" src="scripts/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="scripts/jquery.ajaxfileupload.js"></script>
+	<script type="text/javascript">
+		
+		function applyAjaxFileUpload(element) {
+			$(element).ajaxfileupload({
+				debug : true,
+				onSubmit: function(file) {
+					var span = $('<span />')
+						.attr('class', $(this).attr('id'))
+						.text('Uploading')
+						.insertAfter($(this));
+						
+					interval = window.setInterval(function() {
+						var text = span.text();
+						if (text.length < 13) {
+							span.text(text + '.');
+						} else {
+							span.text('Uploading');
+						}
+					}, 200);
+				},
+				onComplete: function(file, response) {
+					window.clearInterval(interval);
+					var span = $('span.' + $(this).attr('id')).text(file);
+					var input = $('<input />')
+						.attr({
+							type: 'hidden',
+							id: $(this).attr('id'),
+							name: $(this).attr('name'),
+							value: file
+						})
+						.appendTo(span);
+					
+					$('<a />')
+						.attr('href', '#')
+						.text('x')
+						.click(function(e) {
+							
+							var fileInput = $('<input />')
+								.attr({
+									type: 'file',
+									name: input.attr('name'),
+									id: input.attr('id')
+								});
+							
+							span.replaceWith(fileInput);
+							
+							applyAjaxFileUpload(fileInput);
+							
+						})
+						.appendTo(span);
+				}
+			});
+		}
+		
+		$(document).ready(function () {
+
+			var interval;
+			
+			applyAjaxFileUpload('input');
+		});
+	</script>
 </body>
-<script type="text/javascript" src="scripts/jquery-1.4.2.min.js"></script>
-<script type="text/javascript" src="scripts/jquery.ajaxfileupload.js"></script>
-<script type="text/javascript">
-	$(document).ready(function () {
-		
-		$('input').ajaxfileupload({
-			debug : true
-		}) 
-		
-	});
-</script>
 </html>
