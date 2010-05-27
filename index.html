@@ -3,13 +3,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title>AjaxUpload</title>
+	<title>AJAX File Upload Demo</title>
 </head>
 <body>
+	<h1>AJAX File Upload Demo</h1>
+	<p>
+		This is a demo page for the AJAX File Upload jQuery plugin.<br />
+		Choose a file below and it will be uploaded without navigating away from this page.
+	</p>
 	<form method="post" action="" enctype="multipart/form-data">
-		<input type="file" name="file1" id="example1" /><br />
-		<input type="text" name="filename" id="example2" /><br />
-		<input type="file" name="file2" id="example3" /><br />
+		<label>File Input: <input type="file" name="file1" id="example1" /></label>
 	</form>
 	<script type="text/javascript" src="scripts/jquery-1.4.2.min.js"></script>
 	<script type="text/javascript" src="scripts/jquery.ajaxfileupload.js"></script>
@@ -18,7 +21,10 @@
 		function applyAjaxFileUpload(element) {
 			$(element).ajaxfileupload({
 				debug : true,
+				action :'upload.php',
 				onChange: function(file) {
+					
+					// Create a span element to notify the user of the uplaod in progress
 					var span = $('<span />')
 						.attr('class', $(this).attr('id'))
 						.text('Uploading')
@@ -35,12 +41,14 @@
 				},
 				onSubmit: function(file) {
 					
-					if (file == 'index.html'){
-						return false;
-					}
+					// Return false here if you want to cancel the upload
+					//return false;
 					
 				},
 				onComplete: function(file, response) {
+					
+					// Upload complete, replace span with filename, remove button and
+					// a hidden input containing the filename
 					window.clearInterval(interval);
 					var span = $('span.' + $(this).attr('id')).text(file + ' ');
 					var input = $('<input />')
@@ -78,8 +86,9 @@
 
 			var interval;
 			
-			applyAjaxFileUpload('input');
+			applyAjaxFileUpload('input#example1');
 		});
+		
 	</script>
 </body>
 </html>
