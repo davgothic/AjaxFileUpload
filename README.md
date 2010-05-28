@@ -1,5 +1,5 @@
 AJAX File Upload
---------------------
+==========
 
 AJAX File Upload is a jQuery plugin I coded for a project that required file uploads without actually submitting a form.
 
