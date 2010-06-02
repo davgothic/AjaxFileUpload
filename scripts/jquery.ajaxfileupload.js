@@ -20,7 +20,7 @@
 		
 		this.each(function() {
 			var $this = $(this);
-			if ($this.is('input') && $this.attr('type') == 'file') {
+			if ($this.is('input') && $this.attr('type') === 'file') {
 				log('Applying to file input with id ' + $this[0].id);
 				$this.bind('change', onChange);
 			} else {
@@ -29,15 +29,16 @@
 		});
 		
 		function onChange(e) {
-			var element	= $(e.target);
-			var file	= filename(element.val());
+			var element	= $(e.target),
+				file	= filename(element.val()),
+				iframe	= createIframe(),
+				form	= createForm(iframe);
+			
 			settings.onChange.call(this, file);
 			
-			var iframe = createIframe();
-			iframe.bind('load', {element:element, file:file}, onComplete);
+			iframe.bind('load', {element: element, file: file}, onComplete);
 			
-			var form = createForm(iframe);
-			form.append(element).bind('submit', {element:element, file:file}, onSubmit).submit();
+			form.append(element).bind('submit', {element: element, file: file}, onSubmit).submit();
 		}
 		
 		function onSubmit(e) {
@@ -58,11 +59,9 @@
 		}
 		
 		function onComplete (e) {
-			var iframe = $(e.target);
-			
-			// Get the response text from the iframe
-			var doc = iframe[0].contentDocument ? iframe[0].contentDocument : window.frames[iframe[0].id].document;
-			var response = doc.body.innerHTML;
+			var iframe	= $(e.target),
+				doc		= iframe[0].contentDocument ? iframe[0].contentDocument : window.frames[iframe[0].id].document,
+				response = doc.body.innerHTML;
 			
 			if (response) {
 				response = eval("(" + response + ")");
@@ -93,8 +92,8 @@
 		})();
 		
 		function createIframe() {
-			var id = randomId();
-			var iframe = $('<iframe/>')
+			var id		= randomId(),
+				iframe	= $('<iframe/>')
 				.attr({
 					src: 'javascript:false;',
 					name: id,
@@ -120,8 +119,8 @@
 			return form;
 		}
 		
-		function log (output) {
-			if (settings.debug == true && typeof(console) != 'undefined' && typeof(console.log) == 'function') {
+		function log(output) {
+			if (settings.debug === true && typeof(console) !== 'undefined' && typeof(console.log) === 'function') {
 				console.log('[AjaxFileUpload] ' + output);
 			}
 		}
