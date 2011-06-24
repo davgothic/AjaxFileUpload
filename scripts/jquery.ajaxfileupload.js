@@ -11,7 +11,7 @@
 		
 		var defaults = {
 			debug: false,
-			action: 'upload.php',
+			action: "upload.php",
 			onChange: function(file){},
 			onSubmit: function(file){},
 			onComplete: function(file, response){}
@@ -20,11 +20,11 @@
 		
 		this.each(function() {
 			var $this = $(this);
-			if ($this.is('input') && $this.attr('type') === 'file') {
-				log('Applying to file input with id ' + $this[0].id);
-				$this.bind('change', onChange);
+			if ($this.is("input") && $this.attr("type") === "file") {
+				log("Applying to file input with id " + $this[0].id);
+				$this.bind("change", onChange);
 			} else {
-				log('Ignoring invalid element');
+				log("Ignoring invalid element");
 			}
 		});
 		
@@ -36,15 +36,15 @@
 			
 			settings.onChange.call(this, file);
 			
-			iframe.bind('load', {element: element, file: file}, onComplete);
+			iframe.bind("load", {element: element, file: file}, onComplete);
 			
-			form.append(element).bind('submit', {element: element, file: file}, onSubmit).submit();
+			form.append(element).bind("submit", {element: element, file: file}, onSubmit).submit();
 		}
 		
 		function onSubmit(e) {
 			// If false cancel the submission
 			if (settings.onSubmit.call(e.data.element, e.data.file) === false) {
-				$('span.' + e.data.element.attr('id')).replaceWith(e.data.element);
+				$("span." + e.data.element.attr("id")).replaceWith(e.data.element);
 				return false;
 			}
 			
@@ -64,7 +64,7 @@
 				response = doc.body.innerHTML;
 			
 			if (response) {
-				response = eval("(" + response + ")");
+				response = jQuery.parseJSON(response);
 			} else {
 				response = {};
 			}
@@ -81,47 +81,47 @@
 		}
 		
 		function filename(filePath) {
-			return filePath.replace(/.*(\/|\\)/, '');
+			return filePath.replace(/.*(\/|\\)/, "");
 		}
 		
 		var randomId = (function() {
 			var id = 0;
 			return function () {
-				return '_AjaxFileUpload' + id++;
+				return "_AjaxFileUpload" + id++;
 			};
 		})();
 		
 		function createIframe() {
 			var id		= randomId(),
-				iframe	= $('<iframe/>')
+				iframe	= $("<iframe/>")
 				.attr({
-					src: 'javascript:false;',
+					src: "javascript:false;",
 					name: id,
 					id: id
 				})
 				.hide()
-				.appendTo('body');
+				.appendTo("body");
 				
 			return iframe;
 		}
 		
 		function createForm(iframe) {
-			var form = $('<form />')
+			var form = $("<form />")
 				.attr({
-					method: 'post',
+					method: "post",
 					action: settings.action,
-					enctype: 'multipart/form-data',
+					enctype: "multipart/form-data",
 					target: iframe[0].name
 				})
 				.hide()
-				.appendTo('body');
+				.appendTo("body");
 				
 			return form;
 		}
 		
 		function log(output) {
-			if (settings.debug === true && typeof(console) !== 'undefined' && typeof(console.log) === 'function') {
-				console.log('[AjaxFileUpload] ' + output);
+			if (settings.debug === true && typeof(console) !== "undefined" && typeof(console.log) === "function") {
+				console.log("[AjaxFileUpload] " + output);
 			}
 		}
 

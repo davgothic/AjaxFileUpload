@@ -14,28 +14,28 @@
 	<form method="post" action="" enctype="multipart/form-data">
 		<label>File Input: <input type="file" name="file1" id="example1" /></label>
 	</form>
-	<script type="text/javascript" src="scripts/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="scripts/jquery-1.6.1.min.js"></script>
 	<script type="text/javascript" src="scripts/jquery.ajaxfileupload.js"></script>
 	<script type="text/javascript">
 		
 		function applyAjaxFileUpload(element) {
 			$(element).ajaxfileupload({
 				debug : true,
-				action :'upload.php',
+				action :"upload.php",
 				onChange: function(file) {
 					
-					// Create a span element to notify the user of the uplaod in progress
-					var span = $('<span />')
-						.attr('class', $(this).attr('id'))
-						.text('Uploading')
+					// Create a span element to notify the user of the upload in progress
+					var span = $("<span />")
+						.attr("class", $(this).attr("id"))
+						.text("Uploading")
 						.insertAfter($(this));
 						
 					interval = window.setInterval(function() {
 						var text = span.text();
 						if (text.length < 13) {
-							span.text(text + '.');
+							span.text(text + ".");
 						} else {
-							span.text('Uploading');
+							span.text("Uploading");
 						}
 					}, 200);
 				},
@@ -50,26 +50,44 @@
 					// Upload complete, replace span with filename, remove button and
 					// a hidden input containing the filename
 					window.clearInterval(interval);
-					var span = $('span.' + $(this).attr('id')).text(file + ' ');
-					var input = $('<input />')
+					var span = $("span." + $(this).attr("id")).text(file + " ");
+					var input = $("<input />")
 						.attr({
-							type: 'hidden',
-							id: $(this).attr('id'),
-							name: $(this).attr('name'),
+							type: "hidden",
+							id: $(this).attr("id"),
+							name: $(this).attr("name"),
 							value: file
 						})
 						.appendTo(span);
+
+					if (typeof(response.error) === "string")
+					{
+						var fileInput = $("<input />")
+							.attr({
+								type: "file",
+								name: input.attr("name"),
+								id: input.attr("id")
+							});
+							
+							span.replaceWith(fileInput);
+							
+							applyAjaxFileUpload(fileInput);
+							
+							alert(response.error);
+
+							return;
+					}
 					
-					$('<a />')
-						.attr('href', '#')
-						.text('x')
+					$("<a />")
+						.attr("href", "#")
+						.text("x")
 						.click(function(e) {
 							
-							var fileInput = $('<input />')
+							var fileInput = $("<input />")
 								.attr({
-									type: 'file',
-									name: input.attr('name'),
-									id: input.attr('id')
+									type: "file",
+									name: input.attr("name"),
+									id: input.attr("id")
 								});
 							
 							span.replaceWith(fileInput);
@@ -86,7 +104,7 @@
 
 			var interval;
 			
-			applyAjaxFileUpload('input#example1');
+			applyAjaxFileUpload("input#example1");
 		});
 		
 	</script>

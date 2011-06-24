@@ -17,7 +17,7 @@ if ($_FILES)
 		
 		if ($error === UPLOAD_ERR_OK)
 		{
-			$extension = pathinfo($filename, PATHINFO_EXTENSION);
+			$extension = pathinfo($name, PATHINFO_EXTENSION);
 
 			if ( ! in_array($extension, $whitelist))
 			{
