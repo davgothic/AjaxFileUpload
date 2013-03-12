@@ -1,4 +1,4 @@
-Copyright (c) 2011 David Hancock
+Copyright (c) 2010 David Hancock
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation

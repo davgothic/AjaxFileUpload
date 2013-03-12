@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>AJAX File Upload - Advanced Demo</title>
+</head>
+<body>
+	<h1>AJAX File Upload - Advanced Demo</h1>
+	<p>
+		This is a slightly more advanced demo of the plugin's features.<br />
+		Choose a file below and it will be uploaded without navigating away from this page.<br />
+		This demo makes use of the <code>onChange</code>, <code>onSubmit</code> and <code>onComplete</code> events fired by the plugin.
+	</p>
+	<form method="post" action="" enctype="multipart/form-data">
+		<label>File Input: <input type="file" name="file" id="demo1" /></label>
+	</form>
+	<script type="text/javascript" src="jquery-1.6.1.min.js"></script>
+	<script type="text/javascript" src="../jquery.ajaxfileupload.js"></script>
+	<script type="text/javascript">
+
+		$(document).ready(function() {
+			var interval;
+
+			function applyAjaxFileUpload(element) {
+				$(element).AjaxFileUpload({
+					action: "upload.php",
+					onChange: function(filename) {
+						// Create a span element to notify the user of an upload in progress
+						var $span = $("<span />")
+							.attr("class", $(this).attr("id"))
+							.text("Uploading")
+							.insertAfter($(this));
+
+						$(this).remove();
+
+						interval = window.setInterval(function() {
+							var text = $span.text();
+							if (text.length < 13) {
+								$span.text(text + ".");
+							} else {
+								$span.text("Uploading");
+							}
+						}, 200);
+					},
+					onSubmit: function(filename) {
+						// Return false here to cancel the upload
+						/*var $fileInput = $("<input />")
+							.attr({
+								type: "file",
+								name: $(this).attr("name"),
+								id: $(this).attr("id")
+							});
+
+						$("span." + $(this).attr("id")).replaceWith($fileInput);
+
+						applyAjaxFileUpload($fileInput);
+
+						return false;*/
+
+						// Return key-value pair to be sent along with the file
+						return true;
+					},
+					onComplete: function(filename, response) {
+						window.clearInterval(interval);
+						var $span = $("span." + $(this).attr("id")).text(filename + " "),
+							$fileInput = $("<input />")
+								.attr({
+									type: "file",
+									name: $(this).attr("name"),
+									id: $(this).attr("id")
+								});
+
+						if (typeof(response.error) === "string") {
+							$span.replaceWith($fileInput);
+
+							applyAjaxFileUpload($fileInput);
+
+							alert(response.error);
+
+							return;
+						}
+
+						$("<a />")
+							.attr("href", "#")
+							.text("x")
+							.bind("click", function(e) {
+								$span.replaceWith($fileInput);
+
+								applyAjaxFileUpload($fileInput);
+							})
+							.appendTo($span);
+					}
+				});
+			}
+
+			applyAjaxFileUpload("#demo1");
+		});
+
+	</script>
+</body>
+</html>
