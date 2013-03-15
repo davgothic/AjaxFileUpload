@@ -35,7 +35,8 @@
 		
 		function onChange(e) {
 			var $element = $(e.target),
-				$clone   = $element.clone().AjaxFileUpload(options),
+				id       = $element.attr('id'),
+				$clone   = $element.removeAttr('id').clone().attr('id', id).AjaxFileUpload(options),
 				filename = $element.val().replace(/.*(\/|\\)/, ""),
 				iframe   = createIframe(),
 				form     = createForm(iframe);
