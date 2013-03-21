@@ -1,3 +1,5 @@
+define(["jquery"], // Require jquery
+       function($){
 /**
  * AJAX File Upload
  * http://github.com/davgothic/AjaxFileUpload
@@ -114,3 +116,5 @@
 		}
 	};
 })(jQuery);
+
+});
