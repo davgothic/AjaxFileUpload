@@ -78,9 +78,11 @@
 				response = doc.body.innerHTML;
 
 			if (response) {
-				response = $.parseJSON(response);
+			    try {
+			        response = $.parseJSON(doc.body.textContent ? doc.body.textContent : doc.body.innerText);
+			    } catch (e) { }
 			} else {
-				response = {};
+			    response = {};
 			}
 
 			settings.onComplete.call(e.data.element, e.data.filename, response);
