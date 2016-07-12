@@ -78,6 +78,7 @@
 				response = doc.body.innerHTML;
 
 			if (response) {
+				response = response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1);
 				response = $.parseJSON(response);
 			} else {
 				response = {};
