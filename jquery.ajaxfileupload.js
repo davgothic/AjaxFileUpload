@@ -34,6 +34,8 @@
 		});
 		
 		function onChange(e) {
+			if ( e.target.value.length === 0) return; // when user cancel the file selection
+			
 			var $element = $(e.target),
 				id       = $element.attr('id'),
 				$clone   = $element.removeAttr('id').clone().attr('id', id).AjaxFileUpload(options),
@@ -75,7 +77,8 @@
 		function onComplete (e) {
 			var $iframe  = $(e.target),
 				doc      = ($iframe[0].contentWindow || $iframe[0].contentDocument).document,
-				response = doc.body.innerHTML;
+// 				response = doc.body.innerHTML;
+			    response = doc.body.innerText; // plain text
 
 			if (response) {
 				response = $.parseJSON(response);
