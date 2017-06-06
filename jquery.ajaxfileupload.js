@@ -75,10 +75,20 @@
 		function onComplete (e) {
 			var $iframe  = $(e.target),
 				doc      = ($iframe[0].contentWindow || $iframe[0].contentDocument).document,
-				response = doc.body.innerHTML;
+				response = doc.body.innerHTML,
+				// some browser will wrap result in a <pre> tag
+				pre      = doc.getElementsByTagName('pre');
 
+			if(!!pre.length) {
+				response = pre[0].innerHTML;
+			}
+			
 			if (response) {
-				response = $.parseJSON(response);
+				try {
+					response = $.parseJSON(response);
+				} catch (e) {
+					response = {};
+				}
 			} else {
 				response = {};
 			}
