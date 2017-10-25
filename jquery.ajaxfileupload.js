@@ -7,6 +7,9 @@
  * Thanks to Steven Barnett for his generous contributions
  *
  * Licensed under the MIT license ( http://www.opensource.org/licenses/MIT )
+ * 
+ * @update 2017.10.24 by richard chen
+ *   enhancement of exception handler
  */
 
 ;(function($) {
@@ -73,14 +76,23 @@
 		}
 		
 		function onComplete (e) {
-			var $iframe  = $(e.target),
-				doc      = ($iframe[0].contentWindow || $iframe[0].contentDocument).document,
+			var response;
+			
+			try {
+				var $iframe = $(e.target),
+					doc = ($iframe[0].contentWindow || $iframe[0].contentDocument).document,
+					pre = doc.getElementsByTagName('pre');
+
 				response = doc.body.innerHTML;
 
-			if (response) {
+				// some browser auto add <pre> tag
+				if (!!pre.length) {
+					response = pre[0].innerHTML;
+				}
+
 				response = $.parseJSON(response);
-			} else {
-				response = {};
+			} catch (e) {
+				response = null;
 			}
 
 			settings.onComplete.call(e.data.element, e.data.filename, response);
