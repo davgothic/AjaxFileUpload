@@ -96,7 +96,7 @@
       // The iframe must be appended as a string otherwise IE7 will pop up the response in a new window
       // http://stackoverflow.com/a/6222471/268669
       $('body')
-        .append('<iframe src="javascript:false;" name="' + id + '" id="' + id + '" style="display: none;"></iframe>');
+        .append('<iframe src="about:blank;" name="' + id + '" id="' + id + '" style="display: none;"></iframe>');
 
       return $('#' + id);
     }
